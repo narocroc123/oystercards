@@ -23,5 +23,12 @@ describe Oystercard do
       oystercard = Oystercard.new
       expect{ oystercard.top_up 5 }.to change{ oystercard.balance }.by 5
     end
+
+    it 'throws error if limit is exceeded' do
+      oystercard = Oystercard.new
+      limit = Oystercard::LIMIT
+      oystercard.top_up(limit)
+      expect{ oystercard.top_up(1) }.to raise_error "Limit of #{limit} Exceeded"
+    end
   end
 end
