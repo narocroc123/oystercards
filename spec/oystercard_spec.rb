@@ -44,4 +44,25 @@ describe Oystercard do
       expect{ oystercard.deduct 5 }.to change{ oystercard.balance }.by -5
     end
   end
+
+  describe '#touch_in' do
+    it 'responds to touch_in method' do
+      oystercard = Oystercard.new
+      expect(oystercard).to respond_to(:touch_in)
+    end
+
+    it 'when called not initally in a journey' do
+      expect(subject).to_not be_in_journey
+    end
+
+    it 'can touch in' do
+      subject.touch_in
+      expect(subject).to be_in_journey
+    end
+
+    it 'can touch out' do
+      subject.touch_out
+      expect(subject).to_not be_in_journey
+    end
+  end
 end
