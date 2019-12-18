@@ -61,6 +61,13 @@ describe Oystercard do
       expect(subject).to be_in_journey
     end
 
+    it 'throws error if min balance not reached' do
+      minimum = Oystercard::MINIMUM
+      expect{ subject.touch_in }.to raise_error "Minimum balance of £#{minimum} not reached"
+    end
+  end
+
+  describe '#touch_out' do
     it 'can touch out' do
       subject.top_up(5)
       subject.touch_in
@@ -68,9 +75,11 @@ describe Oystercard do
       expect(subject).to_not be_in_journey
     end
 
-    it 'throws error if min balance not reached' do
-      minimum = Oystercard::MINIMUM
-      expect{ subject.touch_in }.to raise_error "Minimum balance of £#{minimum} not reached"
+    it 'charges journey on touch out' do
+      subject.top_up(10)
+      subject.touch_in
+      charge = Oystercard::CHARGE
+      expect { subject.touch_out }.to change { subject.balance }.by -charge
     end
   end
 end
