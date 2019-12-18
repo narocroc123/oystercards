@@ -1,6 +1,9 @@
 require 'oystercard'
 
 describe Oystercard do
+
+  let(:station){ double :station }
+
   it 'responds to instance of oystercard' do
     oystercard = Oystercard.new
     expect(oystercard).to be_kind_of Oystercard
@@ -46,8 +49,6 @@ describe Oystercard do
   # end
 
   describe '#touch_in' do
-    let(:station){ double :station }
-
     it 'when called not initally in a journey' do
       expect(subject).to_not be_in_journey
     end
@@ -71,12 +72,10 @@ describe Oystercard do
   end
 
   describe '#touch_out' do
-    let(:station){ double :station }
-
     it 'can touch out' do
       subject.top_up(5)
       subject.touch_in(station)
-      subject.touch_out
+      subject.touch_out(station)
       expect(subject).to_not be_in_journey
     end
 
@@ -84,14 +83,28 @@ describe Oystercard do
       subject.top_up(10)
       subject.touch_in(station)
       charge = Oystercard::CHARGE
-      expect { subject.touch_out }.to change { subject.balance }.by -charge
+      expect { subject.touch_out(station) }.to change { subject.balance }.by -charge
     end
 
     it 'forgets station on touch out' do
       subject.top_up(5)
       subject.touch_in(station)
-      subject.touch_out
+      subject.touch_out(station)
       expect(subject.entry_station).to eq(nil)
     end
+
+    it 'remembers exit station on touch out' do
+      subject.top_up(5)
+      subject.touch_in(station)
+      subject.touch_out(station)
+      expect(subject.exit_station).to eq(station)
+    end
+  end
+
+  it 'should store previous journeys' do
+    subject.top_up(15)
+    subject.touch_in(station)
+    subject.touch_out(station)
+    expect{subject.touch_in(station)}.to change{:journey_history}.to include(station)
   end
 end
