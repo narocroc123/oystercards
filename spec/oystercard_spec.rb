@@ -46,10 +46,7 @@ describe Oystercard do
   # end
 
   describe '#touch_in' do
-    it 'responds to touch_in method' do
-      oystercard = Oystercard.new
-      expect(oystercard).to respond_to(:touch_in)
-    end
+    let(:station){ double :station }
 
     it 'when called not initally in a journey' do
       expect(subject).to_not be_in_journey
@@ -57,29 +54,44 @@ describe Oystercard do
 
     it 'can touch in' do
       subject.top_up(5)
-      subject.touch_in
+      subject.touch_in(station)
       expect(subject).to be_in_journey
     end
 
     it 'throws error if min balance not reached' do
       minimum = Oystercard::MINIMUM
-      expect{ subject.touch_in }.to raise_error "Minimum balance of £#{minimum} not reached"
+      expect{ subject.touch_in(station) }.to raise_error "Minimum balance of £#{minimum} not reached"
+    end
+
+    it 'remembers entry station on touch in' do
+      subject.top_up(5)
+      subject.touch_in(station)
+      expect(subject.entry_station).to eq(station)
     end
   end
 
   describe '#touch_out' do
+    let(:station){ double :station }
+
     it 'can touch out' do
       subject.top_up(5)
-      subject.touch_in
+      subject.touch_in(station)
       subject.touch_out
       expect(subject).to_not be_in_journey
     end
 
     it 'charges journey on touch out' do
       subject.top_up(10)
-      subject.touch_in
+      subject.touch_in(station)
       charge = Oystercard::CHARGE
       expect { subject.touch_out }.to change { subject.balance }.by -charge
+    end
+
+    it 'forgets station on touch out' do
+      subject.top_up(5)
+      subject.touch_in(station)
+      subject.touch_out
+      expect(subject.entry_station).to eq(nil)
     end
   end
 end
