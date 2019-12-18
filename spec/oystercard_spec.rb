@@ -32,18 +32,18 @@ describe Oystercard do
     end
   end
 
-  describe '#deduct' do
-    it 'responds to deduct method' do
-      oystercard = Oystercard.new
-      expect(oystercard).to respond_to(:deduct).with(1).argument
-    end
-
-    it 'decreases balance by specified amount' do
-      oystercard = Oystercard.new
-      oystercard.top_up(15)
-      expect{ oystercard.deduct 5 }.to change{ oystercard.balance }.by -5
-    end
-  end
+  # describe '#deduct' do
+  #   it 'responds to deduct method' do
+  #     oystercard = Oystercard.new
+  #     expect(oystercard).to respond_to(:deduct).with(1).argument
+  #   end
+  #
+  #   it 'decreases balance by specified amount' do
+  #     oystercard = Oystercard.new
+  #     oystercard.top_up(15)
+  #     expect{ oystercard.deduct 5 }.to change{ oystercard.balance }.by -5
+  #   end
+  # end
 
   describe '#touch_in' do
     it 'responds to touch_in method' do
